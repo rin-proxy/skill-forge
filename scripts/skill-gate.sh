@@ -62,9 +62,15 @@ score_skill() {
 
   # ── ADVISORY (non-scoring): a skill that runs destructive commands should document a safe default
   #    (dry-run / report-first / --apply opt-in). Flags mutators that don't — never changes the score.
-  if [[ -d "$d/scripts" ]] && grep -rqE '\brm[[:space:]]+-[a-zA-Z]*r|[[:space:]]mkfs\b|[[:space:]]dd[[:space:]]+if=|>[[:space:]]*/dev/sd' "$d/scripts/" 2>/dev/null; then
-    grep -qiE 'dry.?run|report.only|preview|--apply|--force|touch(es)? nothing|nothing is (ever )?deleted|default.*(safe|report|preview)|opt-in' "$f" \
-      || notes+="⚠mutation-no-safe-default; "
+  if [[ -d "$d/scripts" ]]; then
+    # real destructive commands only — exclude the pattern-STRING case (a security scanner that carries
+    # `rm -rf` etc. as a detection RULE, not an actual call): drop lines where it's quoted or on a rule line.
+    mut=$(grep -rhnE '\brm[[:space:]]+-[a-zA-Z]*r|[[:space:]]mkfs\b|[[:space:]]dd[[:space:]]+if=|>[[:space:]]*/dev/sd' "$d/scripts/" 2>/dev/null \
+          | grep -vE "['\"].*(rm[[:space:]]+-|mkfs|dd[[:space:]]+if)|PATTERN|DESTRUCT|DETECT|_RE=|pattern|detect|scan|flag" )
+    if [[ -n "$mut" ]]; then
+      grep -qiE 'dry.?run|report.only|preview|--apply|--force|touch(es)? nothing|nothing is (ever )?deleted|default.*(safe|report|preview)|opt-in' "$f" \
+        || notes+="⚠mutation-no-safe-default; "
+    fi
   fi
 
   score=$((fm+pda+pkg+hyg)); local g; g=$(grade_of $score)
