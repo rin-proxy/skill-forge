@@ -62,7 +62,7 @@ score_skill() {
 
   # ── ADVISORY (non-scoring): a skill that runs destructive commands should document a safe default
   #    (dry-run / report-first / --apply opt-in). Flags mutators that don't — never changes the score.
-  if [[ -d "$d/scripts" ]] && grep -rqE '\brm[[:space:]]+-[rf]|[[:space:]]mkfs\b|[[:space:]]dd[[:space:]]+if=|>[[:space:]]*/dev/sd' "$d/scripts/" 2>/dev/null; then
+  if [[ -d "$d/scripts" ]] && grep -rqE '\brm[[:space:]]+-[a-zA-Z]*r|[[:space:]]mkfs\b|[[:space:]]dd[[:space:]]+if=|>[[:space:]]*/dev/sd' "$d/scripts/" 2>/dev/null; then
     grep -qiE 'dry.?run|report.only|preview|--apply|--force|touch(es)? nothing|nothing is (ever )?deleted|default.*(safe|report|preview)|opt-in' "$f" \
       || notes+="⚠mutation-no-safe-default; "
   fi
