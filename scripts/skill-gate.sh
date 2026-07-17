@@ -60,6 +60,13 @@ score_skill() {
   { grep -qiE "^(author|homepage):.*(jeffjhunter|jeff j hunter|halthelobster|hal 9001|obviouslynot)" "$f" || grep -qiE "created by[^.]*(hal 9001|jeff j hunter|@halthelobster)|app\.obviouslynot|jeffjhunter\.com|come say hi on x" "$f"; } && { hyg=$((hyg-5)); notes+="external-IP-brand; "; }
   ((hyg<0)) && hyg=0
 
+  # ── ADVISORY (non-scoring): a skill that runs destructive commands should document a safe default
+  #    (dry-run / report-first / --apply opt-in). Flags mutators that don't — never changes the score.
+  if [[ -d "$d/scripts" ]] && grep -rqE '\brm[[:space:]]+-[rf]|[[:space:]]mkfs\b|[[:space:]]dd[[:space:]]+if=|>[[:space:]]*/dev/sd' "$d/scripts/" 2>/dev/null; then
+    grep -qiE 'dry.?run|report.only|preview|--apply|--force|touch(es)? nothing|nothing is (ever )?deleted|default.*(safe|report|preview)|opt-in' "$f" \
+      || notes+="⚠mutation-no-safe-default; "
+  fi
+
   score=$((fm+pda+pkg+hyg)); local g; g=$(grade_of $score)
   TOT=$((TOT+score)); N=$((N+1)); GRADES[$g]=$(( ${GRADES[$g]:-0} + 1 ))
   printf "  %-22s %3d/100  %s  (f%d p%d k%d h%d)  %s\n" "$name" "$score" "$g" "$fm" "$pda" "$pkg" "$hyg" "${notes:-clean ✓}"

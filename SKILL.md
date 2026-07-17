@@ -1,7 +1,7 @@
 ---
 name: skill-forge
 description: Scaffold, quality-gate, and ship installable OpenClaw skills. Bundles a /100 quality gate plus scaffold/README/CHANGELOG generators so a new skill goes from empty folder to a gate-passing, drop-in package. Use this when authoring a new OpenClaw skill or before publishing one.
-version: 1.0.0
+version: 1.1.0
 metadata:
   openclaw:
     emoji: "🔨"
@@ -16,7 +16,7 @@ triggers:
   - "is my skill ready to ship"
 author: Rin
 license: UNLICENSED
-lastUpdated: 2026-06-17
+lastUpdated: 2026-07-17
 ---
 
 # Skill Forge
